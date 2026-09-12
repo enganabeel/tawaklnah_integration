@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tawakkalna_config_manager,tawakkalna.config.manager,model_tawakkalna_config,group_tawakkalna_manager,1,1,1,1
+access_tawakkalna_config_user,tawakkalna.config.user,model_tawakkalna_config,group_tawakkalna_user,1,0,0,0
+access_tawakkalna_document_manager,tawakkalna.document.manager,model_tawakkalna_document,group_tawakkalna_manager,1,1,1,1
+access_tawakkalna_document_user,tawakkalna.document.user,model_tawakkalna_document,group_tawakkalna_user,1,1,1,1
+access_tawakkalna_document_national_id_manager,tawakkalna.document.national.id.manager,model_tawakkalna_document_national_id,group_tawakkalna_manager,1,1,1,1
+access_tawakkalna_document_national_id_user,tawakkalna.document.national.id.user,model_tawakkalna_document_national_id,group_tawakkalna_user,1,1,1,1

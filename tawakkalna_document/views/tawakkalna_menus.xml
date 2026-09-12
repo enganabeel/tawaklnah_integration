@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_tawakkalna_root" name="Tawakkalna" sequence="90"
+              groups="tawakkalna_document.group_tawakkalna_user"/>
+
+    <menuitem id="menu_tawakkalna_document" name="Documents"
+              parent="menu_tawakkalna_root" action="action_tawakkalna_document" sequence="10"/>
+
+    <menuitem id="menu_tawakkalna_configuration" name="Configuration"
+              parent="menu_tawakkalna_root" sequence="100"
+              groups="tawakkalna_document.group_tawakkalna_manager"/>
+
+    <menuitem id="menu_tawakkalna_config" name="API Settings"
+              parent="menu_tawakkalna_configuration" action="action_tawakkalna_config" sequence="10"/>
+</odoo>

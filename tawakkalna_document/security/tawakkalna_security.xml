@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_tawakkalna" model="ir.module.category">
+        <field name="name">Tawakkalna</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_tawakkalna_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_category_tawakkalna"/>
+    </record>
+
+    <record id="group_tawakkalna_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_tawakkalna"/>
+        <field name="implied_ids" eval="[(4, ref('group_tawakkalna_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="tawakkalna_document_company_rule" model="ir.rule">
+        <field name="name">Tawakkalna Document: multi-company</field>
+        <field name="model_id" ref="model_tawakkalna_document"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="tawakkalna_config_company_rule" model="ir.rule">
+        <field name="name">Tawakkalna Config: multi-company</field>
+        <field name="model_id" ref="model_tawakkalna_config"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>
