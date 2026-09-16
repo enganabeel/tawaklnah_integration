@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="web.WebClient" t-inherit="web.WebClient" t-inherit-mode="extension">
+        <xpath expr="//ActionContainer" position="before">
+            <AppIconRail/>
+        </xpath>
+    </t>
+
+    <t t-name="custom_backend_theme.AppIconRail">
+        <div class="o_cbt_rail">
+            <div class="o_cbt_rail_top">
+                <button class="o_cbt_rail_icon" title="Settings" t-on-click="onSettingsClick">
+                    <i class="fa fa-cog"/>
+                </button>
+                <button class="o_cbt_rail_icon" title="Toggle dark mode" t-on-click="toggleDarkMode">
+                    <i t-attf-class="fa {{state.darkMode ? 'fa-sun-o' : 'fa-moon-o'}}"/>
+                </button>
+            </div>
+            <div class="o_cbt_rail_apps">
+                <t t-foreach="apps" t-as="app" t-key="app.id">
+                    <a href="#" class="o_cbt_rail_icon o_cbt_rail_app"
+                       t-att-class="{ o_cbt_active: isActive(app) }"
+                       t-att-title="app.name"
+                       t-on-click.prevent="() => this.onAppClick(app)">
+                        <img t-if="app.webIconData" t-att-src="app.webIconData" alt=""/>
+                        <span t-else="" class="o_cbt_rail_fallback" t-esc="app.name.charAt(0)"/>
+                    </a>
+                </t>
+            </div>
+            <div class="o_cbt_rail_bottom">
+                <button class="o_cbt_rail_icon" title="Apps" t-on-click="onAppsGridClick">
+                    <i class="fa fa-th"/>
+                </button>
+                <button class="o_cbt_rail_icon" title="Log out" t-on-click="onLogoutClick">
+                    <i class="fa fa-sign-out"/>
+                </button>
+            </div>
+        </div>
+    </t>
+
+</templates>
