@@ -11,6 +11,32 @@
     --cbt-radius-sm: 8px;
     --cbt-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
     --cbt-shadow-hover: 0 8px 20px rgba(15, 23, 42, 0.10);
+    --cbt-rail-width: 64px;
+    --cbt-rail-bg: #1f2430;
+    --cbt-rail-icon: #b7bacb;
+}
+
+// Dark mode overrides (toggled via the rail's moon/sun icon), scoped to
+// this theme's own surfaces rather than a full backend-wide reskin.
+html.o_cbt_dark {
+    --cbt-bg: #14161f;
+    --cbt-card-bg: #1c2030;
+    --cbt-border: #2a2f42;
+    --cbt-text-muted: #8992ab;
+
+    .o_main_navbar {
+        background-color: var(--cbt-card-bg) !important;
+        border-color: var(--cbt-border) !important;
+    }
+
+    .o_menu_brand,
+    .cbt_header h2,
+    .cbt_stat_value,
+    .cbt_mini_stat strong,
+    .cbt_summary_row strong,
+    .cbt_table td {
+        color: #f0f1f8 !important;
+    }
 }
 
 body.o_web_client,
@@ -367,4 +393,83 @@ body.o_web_client,
             grid-template-columns: 1fr;
         }
     }
+}
+
+// ---------------------------------------------------------------------
+// Left icon-rail app switcher
+// ---------------------------------------------------------------------
+body.o_cbt_has_rail {
+    padding-left: var(--cbt-rail-width);
+}
+
+.o_cbt_rail {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--cbt-rail-width);
+    background-color: var(--cbt-rail-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    gap: 8px;
+    z-index: 1001;
+    overflow-y: auto;
+}
+
+.o_cbt_rail_top, .o_cbt_rail_bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.o_cbt_rail_apps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+.o_cbt_rail_icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--cbt-rail-icon);
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color .15s ease, color .15s ease;
+
+    img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        border-radius: 6px;
+    }
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.10);
+        color: #fff;
+    }
+}
+
+.o_cbt_rail_app.o_cbt_active {
+    background-color: var(--cbt-primary);
+    color: #fff;
+}
+
+.o_cbt_rail_fallback {
+    font-weight: 700;
+    font-size: 14px;
 }

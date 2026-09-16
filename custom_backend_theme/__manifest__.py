@@ -11,6 +11,8 @@ Custom Backend Theme & Dashboard
 - Adds a "Dashboard" app as an operational home screen with live stat tiles,
   a record-mix chart, activity workload, a live summary panel and a recent
   activities feed, backed by real ORM data.
+- Adds a left icon-rail app switcher (with a light/dark toggle) alongside
+  the standard top navigation.
 """,
     'author': 'Ejad Tech',
     'license': 'LGPL-3',
@@ -23,6 +25,8 @@ Custom Backend Theme & Dashboard
             'custom_backend_theme/static/src/scss/theme.scss',
             'custom_backend_theme/static/src/js/dashboard_action.js',
             'custom_backend_theme/static/src/xml/dashboard_templates.xml',
+            'custom_backend_theme/static/src/js/app_icon_rail.js',
+            'custom_backend_theme/static/src/xml/app_icon_rail_templates.xml',
         ],
     },
     'installable': True,
