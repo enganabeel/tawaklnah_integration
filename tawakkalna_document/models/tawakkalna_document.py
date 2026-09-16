@@ -21,6 +21,17 @@ DOCUMENT_TYPE_SELECTION = [
     ('11', 'Loyalty'),
 ]
 
+# Required property keys per the Certificates (documentId 7) field mapping:
+# unique field name -> (English title, Arabic title), used only to prefill
+# lines for the user - the API itself only ever receives the "key".
+CERTIFICATE_PROPERTY_FIELDS = [
+    ('CertificateName', 'Certificate Name', 'اسم الشهادة'),
+    ('RecipientName', 'Recipient Name', 'اسم المستفيد'),
+    ('YearAwarded', 'Year Awarded', 'سنة الحصول على الشهادة'),
+    ('EventName', 'Event Name', 'اسم البطولة'),
+    ('IssuedBy', 'Issued By', 'الجهة المانحة'),
+]
+
 
 class TawakkalnaDocument(models.Model):
     _name = 'tawakkalna.document'
@@ -43,9 +54,9 @@ class TawakkalnaDocument(models.Model):
     national_id_ids = fields.One2many(
         'tawakkalna.document.national.id', 'document_id', string='National IDs')
 
-    property_key = fields.Char(string='Property Key', required=True, tracking=True)
-    property_value_ar = fields.Char(string='Property Value (Arabic)', required=True)
-    property_value_en = fields.Char(string='Property Value (English)', required=True)
+    property_ids = fields.One2many(
+        'tawakkalna.document.property', 'document_id', string='Properties',
+        default=lambda self: self._default_property_lines())
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -89,6 +100,33 @@ class TawakkalnaDocument(models.Model):
             if not rec.national_id_ids:
                 raise ValidationError(_('At least one National ID is required.'))
 
+    @api.model
+    def _default_property_lines(self):
+        # document_type itself defaults to '7' (Certificates), so a brand
+        # new record is prefilled with the required certificate keys; the
+        # onchange below re-applies this if the category is switched later.
+        return [
+            (0, 0, {'key': key})
+            for key, _en, _ar in CERTIFICATE_PROPERTY_FIELDS
+        ]
+
+    @api.onchange('document_type')
+    def _onchange_document_type(self):
+        if self.document_type == '7' and not self.property_ids:
+            self.property_ids = [
+                (0, 0, {'key': key}) for key, _en, _ar in CERTIFICATE_PROPERTY_FIELDS
+            ]
+
+    def _check_properties_complete(self):
+        for rec in self:
+            if not rec.property_ids:
+                raise UserError(_('At least one document property is required.'))
+            for line in rec.property_ids:
+                if not (line.key and line.value_ar and line.value_en):
+                    raise UserError(_(
+                        'Property "%s" is incomplete: key, Arabic value and English value are all required.'
+                    ) % (line.key or _('(no key)')))
+
     def unlink(self):
         for rec in self:
             if rec.state not in ('draft', 'error'):
@@ -108,17 +146,21 @@ class TawakkalnaDocument(models.Model):
             'referenceNumber': self.reference_number,
             'documentId': int(self.document_type),
             'nationalIds': [int(line.national_id) for line in self.national_id_ids],
-            'properties': {
-                'key': self.property_key,
-                'valueAr': self.property_value_ar,
-                'valueEn': self.property_value_en,
-            },
+            'properties': [
+                {
+                    'key': line.key,
+                    'valueAr': line.value_ar,
+                    'valueEn': line.value_en,
+                }
+                for line in self.property_ids
+            ],
         }
 
     def action_push(self):
         for rec in self:
             if rec.state not in ('draft', 'error'):
                 raise UserError(_('Only draft or errored documents can be pushed.'))
+            rec._check_properties_complete()
             config = rec._get_config()
             try:
                 config.call_api('POST', '/push', rec._build_payload())
@@ -137,6 +179,7 @@ class TawakkalnaDocument(models.Model):
         for rec in self:
             if rec.state not in ('pushed', 'updated', 'error'):
                 raise UserError(_('Only previously pushed documents can be updated.'))
+            rec._check_properties_complete()
             config = rec._get_config()
             try:
                 config.call_api('PUT', '/update', rec._build_payload())
@@ -191,3 +234,16 @@ class TawakkalnaDocumentNationalId(models.Model):
         for rec in self:
             if not rec.national_id.isdigit():
                 raise ValidationError(_('National ID must contain digits only.'))
+
+
+class TawakkalnaDocumentProperty(models.Model):
+    _name = 'tawakkalna.document.property'
+    _description = 'Tawakkalna Document Property'
+    _order = 'id'
+
+    document_id = fields.Many2one(
+        'tawakkalna.document', string='Document', required=True, ondelete='cascade')
+    key = fields.Char(string='Key', required=True,
+                       help='Technical property name sent to Tawakkalna, e.g. CertificateName.')
+    value_ar = fields.Char(string='Value (Arabic)')
+    value_en = fields.Char(string='Value (English)')
