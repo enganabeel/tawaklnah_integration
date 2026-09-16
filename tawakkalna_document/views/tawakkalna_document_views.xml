@@ -25,7 +25,6 @@
                         <group>
                             <field name="reference_number" readonly="state != 'draft'"/>
                             <field name="document_type"/>
-                            <field name="partner_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group>
@@ -78,7 +77,6 @@
                 <field name="name"/>
                 <field name="reference_number"/>
                 <field name="document_type"/>
-                <field name="partner_id"/>
                 <field name="state"/>
                 <field name="push_date"/>
                 <field name="company_id" groups="base.group_multi_company"/>
@@ -93,7 +91,6 @@
             <search string="Search Tawakkalna Documents">
                 <field name="name"/>
                 <field name="reference_number"/>
-                <field name="partner_id"/>
                 <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Pushed" name="filter_pushed" domain="[('state', 'in', ('pushed', 'updated'))]"/>
                 <filter string="Error" name="filter_error" domain="[('state', '=', 'error')]"/>

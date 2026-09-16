@@ -50,7 +50,6 @@ class TawakkalnaDocument(models.Model):
     document_file = fields.Binary(string='File (PDF)', required=True, attachment=True)
     document_filename = fields.Char(string='File Name')
 
-    partner_id = fields.Many2one('res.partner', string='Related Contact')
     national_id_ids = fields.One2many(
         'tawakkalna.document.national.id', 'document_id', string='National IDs')
 
