@@ -33,12 +33,20 @@
                             <field name="document_filename" invisible="1"/>
                         </group>
                     </group>
-                    <group string="Document Property">
-                        <field name="property_key"/>
-                        <field name="property_value_ar"/>
-                        <field name="property_value_en"/>
-                    </group>
                     <notebook>
+                        <page string="Properties">
+                            <p class="text-muted" invisible="document_type != '7'">
+                                Certificates require: Certificate Name, Recipient Name, Year Awarded,
+                                Event Name and Issued By. Fill in the Arabic and English value for each.
+                            </p>
+                            <field name="property_ids">
+                                <list editable="bottom">
+                                    <field name="key"/>
+                                    <field name="value_ar"/>
+                                    <field name="value_en"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="National IDs">
                             <field name="national_id_ids">
                                 <list editable="bottom">
