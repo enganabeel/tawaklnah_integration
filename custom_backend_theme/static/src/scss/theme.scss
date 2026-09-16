@@ -14,6 +14,7 @@
     --cbt-rail-width: 64px;
     --cbt-rail-bg: #1f2430;
     --cbt-rail-icon: #b7bacb;
+    --cbt-navbar-fg: #4a4f63;
 }
 
 // Dark mode overrides (toggled via the rail's moon/sun icon), scoped to
@@ -23,6 +24,7 @@ html.o_cbt_dark {
     --cbt-card-bg: #1c2030;
     --cbt-border: #2a2f42;
     --cbt-text-muted: #8992ab;
+    --cbt-navbar-fg: #d7d9e6;
 
     .o_main_navbar {
         background-color: var(--cbt-card-bg) !important;
@@ -45,14 +47,63 @@ body.o_web_client,
 }
 
 // Top navigation bar
+//
+// Stock Odoo ships this bar with a colored (branded) background and
+// white icons/text. We force the background to white below, so every
+// child must also get an explicit dark color - otherwise icons that
+// relied on inheriting "white" become invisible on white.
 .o_main_navbar {
     background-color: var(--cbt-card-bg) !important;
+    color: var(--cbt-navbar-fg) !important;
     border-bottom: 1px solid var(--cbt-border) !important;
     box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
 
     .o_menu_brand {
         font-weight: 700;
         color: #1f2430;
+    }
+
+    // Systray (messages/activities/user menu) and the apps-grid toggle:
+    // force dark icon color, keep notification badges as-is.
+    .o_menu_systray,
+    .o_menu_systray a,
+    .o_menu_systray button,
+    .o_menu_systray i,
+    .o_menu_systray span,
+    .o_user_menu,
+    .o_user_menu i,
+    .o_navbar_apps_menu,
+    .o_navbar_apps_menu button,
+    .o_navbar_apps_menu i {
+        color: var(--cbt-navbar-fg) !important;
+    }
+
+    .o_menu_systray .badge {
+        color: #fff !important;
+    }
+
+    // App-section pills ("Contacts | Configuration"): neutral by
+    // default instead of the stock branded purple, accent when active.
+    .o_menu_sections {
+        .dropdown-toggle,
+        .o_nav_entry,
+        > div > button {
+            color: var(--cbt-navbar-fg) !important;
+            background-color: transparent !important;
+            border-radius: 999px;
+            padding: 6px 16px;
+            margin: 0 2px;
+            transition: background-color .15s ease, color .15s ease;
+
+            &:hover {
+                background-color: rgba(91, 95, 239, 0.08) !important;
+            }
+
+            &.active, &.show, &.focus {
+                background-color: var(--cbt-primary) !important;
+                color: #fff !important;
+            }
+        }
     }
 
     .dropdown-toggle, .o_nav_entry {
