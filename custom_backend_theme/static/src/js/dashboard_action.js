@@ -3,6 +3,7 @@
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { user } from "@web/core/user";
 
 export class CustomDashboard extends Component {
     static template = "custom_backend_theme.Dashboard";
@@ -11,7 +12,7 @@ export class CustomDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.actionService = useService("action");
-        this.user = useService("user");
+        this.user = user;
 
         this.state = useState({
             loading: true,
