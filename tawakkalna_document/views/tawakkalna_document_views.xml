@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tawakkalna_document_form" model="ir.ui.view">
+        <field name="name">tawakkalna.document.form</field>
+        <field name="model">tawakkalna.document</field>
+        <field name="arch" type="xml">
+            <form string="Tawakkalna Document">
+                <header>
+                    <button name="action_push" type="object" string="Push to Tawakkalna"
+                            class="btn-primary" invisible="state not in ('draft', 'error')"/>
+                    <button name="action_update" type="object" string="Update on Tawakkalna"
+                            class="btn-primary" invisible="state not in ('pushed', 'updated', 'error')"/>
+                    <button name="action_delete" type="object" string="Remove from Tawakkalna"
+                            class="btn-danger" invisible="state not in ('pushed', 'updated', 'error')"
+                            confirm="Are you sure you want to remove this document from Tawakkalna?"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'error'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pushed,updated"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Document title"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="reference_number" readonly="state != 'draft'"/>
+                            <field name="document_type"/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="document_file" filename="document_filename"/>
+                            <field name="document_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Document Property">
+                        <field name="property_key"/>
+                        <field name="property_value_ar"/>
+                        <field name="property_value_en"/>
+                    </group>
+                    <notebook>
+                        <page string="National IDs">
+                            <field name="national_id_ids">
+                                <list editable="bottom">
+                                    <field name="national_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Sync Status">
+                            <group>
+                                <field name="push_date"/>
+                                <field name="update_date"/>
+                                <field name="delete_date"/>
+                            </group>
+                            <field name="last_error_message" invisible="not last_error_message"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tawakkalna_document_list" model="ir.ui.view">
+        <field name="name">tawakkalna.document.list</field>
+        <field name="model">tawakkalna.document</field>
+        <field name="arch" type="xml">
+            <list string="Tawakkalna Documents" decoration-danger="state == 'error'"
+                  decoration-success="state in ('pushed', 'updated')" decoration-muted="state == 'deleted'">
+                <field name="name"/>
+                <field name="reference_number"/>
+                <field name="document_type"/>
+                <field name="partner_id"/>
+                <field name="state"/>
+                <field name="push_date"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tawakkalna_document_search" model="ir.ui.view">
+        <field name="name">tawakkalna.document.search</field>
+        <field name="model">tawakkalna.document</field>
+        <field name="arch" type="xml">
+            <search string="Search Tawakkalna Documents">
+                <field name="name"/>
+                <field name="reference_number"/>
+                <field name="partner_id"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Pushed" name="filter_pushed" domain="[('state', 'in', ('pushed', 'updated'))]"/>
+                <filter string="Error" name="filter_error" domain="[('state', '=', 'error')]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Category" name="group_document_type" context="{'group_by': 'document_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_tawakkalna_document" model="ir.actions.act_window">
+        <field name="name">Documents</field>
+        <field name="res_model">tawakkalna.document</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_pushed': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Upload a new document to push it to Tawakkalna.
+            </p>
+        </field>
+    </record>
+</odoo>
