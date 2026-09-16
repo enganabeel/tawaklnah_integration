@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_tawakkalna_root" name="Tawakkalna" sequence="90"
+    <menuitem id="menu_tawakkalna_root" name="Tawakkalna" sequence="-10"
+              web_icon="tawakkalna_document,static/description/icon.png"
               groups="tawakkalna_document.group_tawakkalna_user"/>
 
     <menuitem id="menu_tawakkalna_document" name="Documents"
