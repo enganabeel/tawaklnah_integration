@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="custom_backend_theme.Dashboard">
+        <div class="cbt_dashboard">
+            <div class="cbt_header">
+                <h2><t t-esc="greeting"/>, <t t-esc="user.name"/></h2>
+                <p class="cbt_subtitle">Operational snapshot across your workspace.</p>
+            </div>
+
+            <div t-if="state.loading" class="cbt_loading">
+                <i class="fa fa-spinner fa-spin fa-2x"/>
+            </div>
+
+            <t t-if="!state.loading and state.data">
+                <div class="cbt_grid">
+                    <div class="cbt_card cbt_card_wide">
+                        <div class="cbt_card_label">Total Records</div>
+                        <div class="cbt_stat_value" t-esc="state.data.total_records"/>
+                        <div class="cbt_card_sub">Across core operational records</div>
+                        <div class="cbt_mini_stats">
+                            <div class="cbt_mini_stat">
+                                <strong t-esc="state.data.companies"/>
+                                <span>Companies</span>
+                            </div>
+                            <div class="cbt_mini_stat">
+                                <strong t-esc="state.data.customers"/>
+                                <span>Customers</span>
+                            </div>
+                            <div class="cbt_mini_stat">
+                                <strong t-esc="state.data.vendors"/>
+                                <span>Vendors</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cbt_card cbt_card_accent" t-on-click="openOverdue">
+                        <div class="cbt_card_label">Overdue Activities</div>
+                        <div class="cbt_stat_value" t-esc="state.data.overdue_activities"/>
+                        <div class="cbt_card_sub">Need attention</div>
+                    </div>
+
+                    <div class="cbt_card" t-on-click="openDueToday">
+                        <div class="cbt_card_label">Due Today</div>
+                        <div class="cbt_stat_value" t-esc="state.data.due_today"/>
+                        <div class="cbt_card_sub">Scheduled work</div>
+                    </div>
+
+                    <div class="cbt_card" t-on-click="openSalesOrders">
+                        <div class="cbt_card_label">Sales Orders</div>
+                        <div class="cbt_stat_value" t-esc="state.data.sales_orders"/>
+                        <div class="cbt_card_sub">Confirmed sales</div>
+                    </div>
+
+                    <div class="cbt_card" t-on-click="openInvoices">
+                        <div class="cbt_card_label">Invoices</div>
+                        <div class="cbt_stat_value" t-esc="state.data.invoices"/>
+                        <div class="cbt_card_sub">Customer invoices</div>
+                    </div>
+
+                    <div class="cbt_card cbt_card_wide">
+                        <div class="cbt_card_label">Record Mix</div>
+                        <div class="cbt_card_sub">Live count by operational area</div>
+                        <div class="cbt_bar_chart">
+                            <div class="cbt_bar_item" t-foreach="state.data.record_mix" t-as="item" t-key="item.label">
+                                <div class="cbt_bar_value" t-esc="item.count"/>
+                                <div class="cbt_bar_track">
+                                    <div class="cbt_bar_fill" t-attf-style="height: #{item.pct}%;"/>
+                                </div>
+                                <div class="cbt_bar_label" t-esc="item.label"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cbt_grid_secondary">
+                    <div class="cbt_card">
+                        <div class="cbt_card_label">Activity Workload</div>
+                        <div class="cbt_progress">
+                            <div class="cbt_progress_fill" t-attf-style="width: #{state.data.activity_workload.pct}%;"/>
+                        </div>
+                        <div class="cbt_workload_footer">
+                            <span t-esc="state.data.activity_workload.pct + '% urgent'"/>
+                            <span t-esc="state.data.activity_workload.open + ' open activities'"/>
+                        </div>
+                    </div>
+
+                    <div class="cbt_card">
+                        <div class="cbt_card_label">Live Summary</div>
+                        <div class="cbt_summary_row" t-on-click="openCrmLeads">
+                            <span>CRM Leads</span>
+                            <strong t-esc="state.data.live_summary.crm_leads"/>
+                        </div>
+                        <div class="cbt_summary_row" t-on-click="openQuotations">
+                            <span>Quotations</span>
+                            <strong t-esc="state.data.live_summary.quotations"/>
+                        </div>
+                        <div class="cbt_summary_row" t-on-click="openUnpaidInvoices">
+                            <span>Unpaid Invoices</span>
+                            <strong t-esc="state.data.live_summary.unpaid_invoices"/>
+                        </div>
+                    </div>
+
+                    <div class="cbt_card cbt_card_wide">
+                        <div class="cbt_card_label">Recent Activities</div>
+                        <table class="cbt_table">
+                            <thead>
+                                <tr>
+                                    <th>Activity</th>
+                                    <th>Model</th>
+                                    <th>Status</th>
+                                    <th>Due Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.data.recent_activities" t-as="act" t-key="act_index">
+                                    <td t-esc="act.summary"/>
+                                    <td t-esc="act.model"/>
+                                    <td>
+                                        <span t-attf-class="cbt_badge cbt_badge_#{act.status.toLowerCase()}" t-esc="act.status"/>
+                                    </td>
+                                    <td t-esc="act.date_deadline"/>
+                                </tr>
+                                <tr t-if="!state.data.recent_activities.length">
+                                    <td colspan="4" class="cbt_empty">No recent activities</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>
