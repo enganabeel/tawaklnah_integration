@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="web_org.OrgRenderer">
+        <div class="o_org_renderer">
+            <div class="o_org_toolbar d-flex gap-1 px-3">
+                <div class="left">
+                    <button
+                        t-if="state.selectedNodeId"
+                        type="button"
+                        class="btn btn-primary o_org_open_record"
+                        t-on-click="openRecord"
+                        title="Open record"
+                        aria-label="Open selected record"
+                    >
+                        Open <t t-out="getNodeById(state.selectedNodeId).name"/>
+                    </button>
+                </div>
+                <div class="right ms-auto d-flex gap-1">
+                    <button
+                        type="button"
+                        class="btn btn-secondary o_org_toggle_orientation"
+                        t-on-click="toggleOrientation"
+                        title="Toggle orientation"
+                        aria-label="Toggle orientation"
+                    >
+                        <i class="fa fa-sitemap me-1" t-att-style="state.inverted ? '' : 'transform: rotate(270deg);'"/>
+                        <t t-if="state.inverted">Vertical</t>
+                        <t t-else="">Horizontal</t>
+                    </button>
+                    <button
+                        t-if="props.model.data.hasIsolated"
+                        type="button"
+                        class="btn btn-secondary o_org_toggle_isolated_nodes"
+                        t-on-click="toggleIsolatedNodes"
+                        title="Show or hide isolated nodes"
+                        aria-label="Toggle isolated nodes"
+                    >
+                        <i t-if="state.hideIsolatedNodes" class="fa fa-eye-slash me-1"/>
+                        <i t-else="" class="fa fa-eye me-1"/>
+                        Isolated Nodes
+                    </button>
+                    <button
+                        t-if="state.selectedNodeId"
+                        type="button"
+                        class="btn btn-secondary o_org_toggle_dimmed_nodes"
+                        t-on-click="toggleDimmedNodes"
+                        title="Show or hide dimmed nodes"
+                        aria-label="Toggle dimmed nodes"
+                    >
+                        <i t-if="state.hideDimmedNodes" class="fa fa-eye-slash me-1"/>
+                        <i t-else="" class="fa fa-eye me-1"/>
+                        Dimmed Nodes
+                    </button>
+                </div>
+            </div>
+            <div class="o_org_chart_wrapper">
+                <div t-ref="chart" class="o_org_chart_area"/>
+            </div>
+        </div>
+    </t>
+</templates>

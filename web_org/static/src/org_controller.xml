@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="web_org.OrgView">
+        <div t-attf-class="o_org_view {{ props.className }}" t-ref="root">
+            <Layout className="'d-flex'" display="props.display">
+                <t t-set-slot="control-panel-additional-actions">
+                    <CogMenu/>
+                </t>
+                <t t-set-slot="layout-buttons"/>
+                <t t-set-slot="layout-actions">
+                    <SearchBar/>
+                </t>
+                <t t-set-slot="default" t-slot-scope="layout">
+                    <t t-if="displayNoContent">
+                        <t t-if="props.info.noContentHelp" t-call="web.ActionHelper">
+                            <t t-set="noContentHelp" t-value="props.info.noContentHelp"/>
+                        </t>
+                        <t t-else="" t-call="web.NoContentHelper"/>
+                    </t>
+                    <t t-else="">
+                        <t t-component="props.Renderer"
+                           model="model"
+                           archInfo="props.archInfo"/>
+                    </t>
+                </t>
+            </Layout>
+        </div>
+    </t>
+
+</templates>

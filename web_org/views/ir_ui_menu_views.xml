@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ir_ui_menu_view_org" model="ir.ui.view">
+            <field name="name">ir.ui.menu.view.org</field>
+            <field name="model">ir.ui.menu</field>
+            <field name="arch" type="xml">
+                <org title_field="name"
+                     tooltip_field="complete_name"
+                     parent_field="all_parent_ids"
+                     icon="fa-sitemap"
+                     node_width="200"
+                     node_height="40"
+                     padding="20"
+                     default_order="parent_id"
+                />
+
+            </field>
+        </record>
+
+        <record id="base.grant_menu_access" model="ir.actions.act_window">
+            <field name="view_mode">list,org,form</field>
+        </record>
+
+    </data>
+</odoo>

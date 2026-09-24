@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ir_module_module_view_org" model="ir.ui.view">
+            <field name="name">ir.module.module.view.org</field>
+            <field name="model">ir.module.module</field>
+            <field name="arch" type="xml">
+                <org title_field="shortdesc"
+                     parent_field="all_parent_ids"
+                     image_field="icon_image"
+                     icon="fa-sitemap"
+                     node_width="200"
+                     node_height="160"
+                     padding="20"
+                     inverted="1"
+                     default_order="category_id"
+                >
+
+                    <!-- Fields that should be fetched (for title, relations, template, …) -->
+                    <field name="shortdesc"/>
+                    <field name="name"/>
+                    <field name="summary"/>
+<!--                    <field name="icon_image"/>-->
+
+                    <!-- 👇 Kanban-like card template -->
+                    <templates>
+                        <t t-name="org-box">
+                            <div class="o_org_node_img_wrap">
+                                <img t-attf-src="/web/image/ir.module.module/{{record.data.id}}/icon_image"
+                                     t-att-alt="record.data.shortdesc"
+                                     class="o_org_node_img"
+                                     loading="lazy"
+                                />
+                            </div>
+                            <div class="o_org_node_title w-100 text-truncate">
+                                <field name="shortdesc" class="h4"/>
+                            </div>
+                            <div class="o_org_node_subtitle">
+                                <code>
+                                    <field name="name"/>
+                                </code>
+                            </div>
+<!--                            <div class="o_org_node_body text-wrap text-center">-->
+<!--                                <field name="summary"/>-->
+<!--                            </div>-->
+                        </t>
+                    </templates>
+                </org>
+
+            </field>
+        </record>
+
+        <record id="base.open_module_tree" model="ir.actions.act_window">
+            <field name="view_mode">kanban,org,list,form</field>
+        </record>
+
+    </data>
+</odoo>

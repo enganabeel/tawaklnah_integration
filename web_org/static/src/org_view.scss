@@ -1,0 +1,182 @@
+.o_org_view {
+  background-color: #f8f9fa;
+
+  .o_org_renderer {
+
+    width: 100%;
+
+    .o_org_chart_container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .o_org_chart {
+      position: relative;
+    }
+  }
+
+  .o_nocontent_help {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 400px;
+
+    .o_empty_list {
+      text-align: center;
+
+      p {
+        font-size: 18px;
+        color: #6c757d;
+      }
+    }
+  }
+}
+
+// Highcharts customization
+.highcharts-container {
+  font-family: inherit !important;
+}
+
+.highcharts-organization-node {
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.o_org_toolbar {
+  height: 40px;
+  background: white;
+  padding: 4px;
+}
+
+.o_org_chart_wrapper {
+  position: relative;
+  overflow: auto;
+  width: 100%;
+  height: calc(100% - 48px);
+}
+
+.o_org_chart_area {
+  position: relative;
+  min-width: 100%;
+
+  /* While filtered the chart uses its own compact computed width; don't
+     stretch it to the full wrapper width (which makes hanging boxes span
+     the whole page), and center the compact chart horizontally. */
+  &.o_org_filtered {
+    min-width: 0;
+    margin-inline: auto;
+  }
+}
+
+/* Card content inside the SVG rectangle */
+.o_org_node_inner {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px; /* nicer, tighter padding */
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.highcharts-data-labels:not(.highcharts-series-hover) {
+  .highcharts-label {
+    &:has(.o_org_node--selected) {
+      //box-shadow: 0 0 0 3px #3b82f6;
+    }
+
+    &:has(.o_org_node--related) {
+      box-shadow: 0 0 0 2px #0a53be;
+    }
+
+    &:has(.o_org_node--dimmed) {
+      opacity: 0.35 !important;
+    }
+  }
+}
+
+
+/* Image a bit larger, with soft background */
+.o_org_node_img_wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 0%, #eef2ff, #e5f3ff);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+
+.o_org_node_img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Title: slightly bigger & bold */
+.o_org_node_title {
+  width: 100%;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* Hovered links: thicker + accent color */
+.highcharts-link {
+  transition: stroke-width 0.15s ease, stroke 0.15s ease, opacity 0.15s ease;
+}
+
+.highcharts-link.highcharts-point-hover {
+  stroke-width: 3px;
+  stroke: #7c7bad;
+}
+
+.highcharts-series:not(.highcharts-series-hover) {
+  .highcharts-link.highcharts-path-highlight {
+    stroke: #0a53be !important;
+    stroke-width: 3 !important;
+    opacity: 1 !important;
+  }
+
+  .highcharts-link.highcharts-path-dimmed {
+    stroke: #4B4D52 !important;
+    opacity: 0.7 !important;
+  }
+}
+
+/* Tooltip body – simple dark pill with text only */
+.highcharts-tooltip-container {
+  .highcharts-root {
+    display: none;
+  }
+
+  .o_org_tooltip {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.9);
+    color: #f9fafb;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+}
+
+.highcharts-tooltip {
+  z-index: 9999 !important;
+}
+
+/* The invisible anchor that keeps isolated nodes renderable, and the connectors
+   running from it - see ISOLATED_ANCHOR_ID in org_renderer.js. Already drawn
+   transparent and zero-width; this makes sure nothing catches a hover either. */
+.o_org_node_hidden,
+.o_org_link_hidden {
+  display: none;
+}
