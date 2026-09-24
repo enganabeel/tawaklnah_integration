@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Reports-To hierarchy node: expandable <details> per job, recursing into child_ids -->
+    <template id="job_node_reports_to">
+        <details t-attf-class="job_node job_level_#{depth if depth &lt; 4 else 4}" t-att-open="'open' if depth &lt; 1 else None">
+            <summary class="job_row">
+                <span class="job_name" t-esc="node.name"/>
+                <span class="job_meta">
+                    <span t-if="node.department_id" class="job_department" t-esc="node.department_id.name"/>
+                    <span t-if="node.no_of_employee" class="job_badge">
+                        <t t-esc="node.no_of_employee"/>
+                        <t t-if="node.no_of_employee == 1"> employee</t>
+                        <t t-else=""> employees</t>
+                    </span>
+                </span>
+            </summary>
+            <t t-set="child_jobs" t-value="node.child_ids.filtered(lambda c: c.active).sorted(key=lambda c: c.name or '')"/>
+            <div t-if="child_jobs" class="job_children">
+                <t t-foreach="child_jobs" t-as="child_job">
+                    <t t-call="hr_job_hierarchy.job_node_reports_to">
+                        <t t-set="node" t-value="child_job"/>
+                        <t t-set="depth" t-value="depth + 1"/>
+                    </t>
+                </t>
+            </div>
+        </details>
+    </template>
+
+    <!-- Department hierarchy node: expandable <details> per department, listing its job
+         positions as leaf rows, then recursing into child departments -->
+    <template id="job_node_by_department">
+        <details t-attf-class="job_node dept_level_#{depth if depth &lt; 4 else 4}" t-att-open="'open' if depth &lt; 1 else None">
+            <summary class="job_row">
+                <span class="job_name" t-esc="node.name"/>
+                <span class="job_meta">
+                    <span t-if="node.manager_id" class="job_department" t-esc="node.manager_id.name"/>
+                    <span t-if="node.total_employee" class="job_badge">
+                        <t t-esc="node.total_employee"/>
+                        <t t-if="node.total_employee == 1"> employee</t>
+                        <t t-else=""> employees</t>
+                    </span>
+                </span>
+            </summary>
+
+            <t t-set="dept_jobs" t-value="node.env['hr.job'].search([('department_id', '=', node.id), ('active', '=', True)], order='name')"/>
+            <div t-if="dept_jobs" class="job_children job_leaf_group">
+                <div t-foreach="dept_jobs" t-as="job" class="job_leaf_row">
+                    <span class="job_leaf_name" t-esc="job.name"/>
+                    <span t-if="job.no_of_employee" class="job_leaf_badge">
+                        <t t-esc="job.no_of_employee"/>
+                        <t t-if="job.no_of_employee == 1"> employee</t>
+                        <t t-else=""> employees</t>
+                    </span>
+                </div>
+            </div>
+
+            <t t-set="child_depts" t-value="node.child_ids.filtered(lambda c: c.active).sorted(key=lambda c: c.name or '')"/>
+            <div t-if="child_depts" class="job_children">
+                <t t-foreach="child_depts" t-as="child_dept">
+                    <t t-call="hr_job_hierarchy.job_node_by_department">
+                        <t t-set="node" t-value="child_dept"/>
+                        <t t-set="depth" t-value="depth + 1"/>
+                    </t>
+                </t>
+            </div>
+        </details>
+    </template>
+
+    <template id="job_hierarchy_page">
+        <html>
+            <head>
+                <meta charset="utf-8"/>
+                <title><t t-esc="title"/></title>
+                <style>
+                    :root { --primary: #1B5E3F; --primary-dark: #0D3B23; --accent: #D4AF37; }
+                    * { box-sizing: border-box; }
+                    body {
+                        font-family: Arial, Helvetica, sans-serif;
+                        color: #1A1A1A;
+                        background: #F8F9F7;
+                        margin: 0;
+                        padding: 30px;
+                    }
+                    .job_hierarchy_wrap { max-width: 1000px; margin: 0 auto; }
+                    .job_page_header {
+                        margin-bottom: 20px;
+                        padding-bottom: 12px;
+                        border-bottom: 2px solid var(--primary-dark);
+                    }
+                    .job_page_header h1 { color: var(--primary-dark); margin: 0 0 4px 0; font-size: 22px; }
+                    .job_page_header .job_page_subtitle { color: #666; font-size: 13px; }
+                    .job_page_nav { margin-bottom: 18px; font-size: 13px; }
+                    .job_page_nav a {
+                        color: var(--primary);
+                        text-decoration: none;
+                        margin-right: 16px;
+                        font-weight: 600;
+                    }
+                    .job_page_nav a:hover { text-decoration: underline; }
+                    .job_hierarchy_card {
+                        background: #FFFFFF;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+                        padding: 22px;
+                    }
+                    .job_node { margin: 3px 0; }
+                    .job_node > summary { cursor: pointer; list-style: none; }
+                    .job_node > summary::-webkit-details-marker { display: none; }
+                    .job_node > summary:before {
+                        content: "▸";
+                        display: inline-block;
+                        width: 14px;
+                        color: #999;
+                        transition: transform 0.15s ease;
+                    }
+                    .job_node[open] > summary:before { transform: rotate(90deg); }
+                    .job_row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 7px 12px;
+                        border-radius: 5px;
+                        margin: 2px 0;
+                    }
+                    .job_children {
+                        margin-left: 24px;
+                        padding-left: 12px;
+                        border-left: 1px dashed #C9D6CF;
+                    }
+                    .job_level_0 > summary .job_row, .dept_level_0 > summary .job_row { background: var(--primary-dark); }
+                    .job_level_0 > summary .job_row .job_name, .dept_level_0 > summary .job_row .job_name { color: #FFFFFF; font-weight: 700; font-size: 14px; }
+                    .job_level_0 > summary .job_row .job_department, .dept_level_0 > summary .job_row .job_department { color: var(--accent); }
+                    .job_level_1 > summary .job_row, .dept_level_1 > summary .job_row { background: #E3EEE7; border-left: 3px solid var(--primary); }
+                    .job_level_2 > summary .job_row, .dept_level_2 > summary .job_row { background: #F3F8F5; border-left: 3px solid #6FA98A; }
+                    .job_level_3 > summary .job_row, .dept_level_3 > summary .job_row,
+                    .job_level_4 > summary .job_row, .dept_level_4 > summary .job_row { border-left: 3px solid #C9D6CF; }
+                    .job_name { font-weight: 600; }
+                    .job_meta { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+                    .job_department { color: #555; }
+                    .job_badge {
+                        background: var(--accent);
+                        color: #1A1A1A;
+                        border-radius: 10px;
+                        padding: 2px 10px;
+                        font-weight: 600;
+                        font-size: 11px;
+                    }
+                    .job_leaf_group { border-left-style: dotted !important; }
+                    .job_leaf_row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 4px 12px;
+                        margin: 1px 0;
+                        font-size: 12px;
+                        font-style: italic;
+                        color: #444;
+                    }
+                    .job_leaf_row:before { content: "•"; margin-right: 8px; color: #6FA98A; }
+                    .job_leaf_badge {
+                        background: #EFEFEF;
+                        color: #444;
+                        border-radius: 10px;
+                        padding: 1px 9px;
+                        font-style: normal;
+                        font-size: 11px;
+                    }
+                    .job_empty { color: #888; padding: 20px; text-align: center; }
+                </style>
+            </head>
+            <body>
+                <div class="job_hierarchy_wrap">
+                    <div class="job_page_header">
+                        <h1><t t-esc="title"/></h1>
+                        <div class="job_page_subtitle"><t t-esc="subtitle"/></div>
+                    </div>
+                    <div class="job_page_nav">
+                        <a href="/job_hierarchy">Job Hierarchy (Reports To)</a>
+                        <a href="/job_hierarchy/by_department">Job Hierarchy by Department</a>
+                        <a href="/odoo">Back to Odoo</a>
+                    </div>
+                    <div class="job_hierarchy_card">
+                        <t t-if="not roots">
+                            <div class="job_empty">No records to display.</div>
+                        </t>
+                        <t t-if="mode == 'reports_to'">
+                            <t t-foreach="roots" t-as="root_job">
+                                <t t-call="hr_job_hierarchy.job_node_reports_to">
+                                    <t t-set="node" t-value="root_job"/>
+                                    <t t-set="depth" t-value="0"/>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-if="mode == 'by_department'">
+                            <t t-foreach="roots" t-as="root_dept">
+                                <t t-call="hr_job_hierarchy.job_node_by_department">
+                                    <t t-set="node" t-value="root_dept"/>
+                                    <t t-set="depth" t-value="0"/>
+                                </t>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+
+</odoo>

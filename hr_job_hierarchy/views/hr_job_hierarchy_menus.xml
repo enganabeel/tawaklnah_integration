@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Interactive pages -->
+    <record id="action_url_job_hierarchy" model="ir.actions.act_url">
+        <field name="name">Job Hierarchy</field>
+        <field name="url">/job_hierarchy</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_job_hierarchy"
+              name="Job Hierarchy"
+              parent="hr.hr_menu_hr_reports"
+              action="action_url_job_hierarchy"
+              groups="hr.group_hr_user"
+              sequence="55"/>
+
+    <record id="action_url_job_hierarchy_by_department" model="ir.actions.act_url">
+        <field name="name">Job Hierarchy by Department</field>
+        <field name="url">/job_hierarchy/by_department</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_job_hierarchy_by_department"
+              name="Job Hierarchy by Department"
+              parent="hr.hr_menu_hr_reports"
+              action="action_url_job_hierarchy_by_department"
+              groups="hr.group_hr_user"
+              sequence="56"/>
+
+    <!--
+        Printable versions: same convenience pattern as
+        hr_department_tree_report's "print the whole org" server action.
+        Each report is also available directly via Print on the relevant
+        list view, through its binding_model_id/binding_type.
+    -->
+    <record id="action_print_full_job_hierarchy" model="ir.actions.server">
+        <field name="name">Job Hierarchy (PDF)</field>
+        <field name="model_id" ref="hr.model_hr_job"/>
+        <field name="state">code</field>
+        <field name="code">
+jobs = model.search([('company_id', 'in', env.companies.ids)])
+action = env.ref('hr_job_hierarchy.action_report_hr_job_hierarchy').report_action(jobs)
+        </field>
+    </record>
+
+    <menuitem id="menu_print_full_job_hierarchy"
+              name="Job Hierarchy (PDF)"
+              parent="hr.hr_menu_hr_reports"
+              action="action_print_full_job_hierarchy"
+              groups="hr.group_hr_user"
+              sequence="57"/>
+
+    <record id="action_print_full_job_by_department" model="ir.actions.server">
+        <field name="name">Job Hierarchy by Department (PDF)</field>
+        <field name="model_id" ref="hr.model_hr_department"/>
+        <field name="state">code</field>
+        <field name="code">
+departments = model.search([('company_id', 'in', env.companies.ids)])
+action = env.ref('hr_job_hierarchy.action_report_hr_job_by_department').report_action(departments)
+        </field>
+    </record>
+
+    <menuitem id="menu_print_full_job_by_department"
+              name="Job Hierarchy by Department (PDF)"
+              parent="hr.hr_menu_hr_reports"
+              action="action_print_full_job_by_department"
+              groups="hr.group_hr_user"
+              sequence="58"/>
+
+</odoo>

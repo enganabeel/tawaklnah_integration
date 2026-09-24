@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_hr_job_hierarchy" model="ir.actions.report">
+        <field name="name">Job Hierarchy</field>
+        <field name="model">hr.job</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hr_job_hierarchy.report_job_hierarchy</field>
+        <field name="print_report_name">'Job Hierarchy - %s' % (object.env.company.name)</field>
+        <field name="binding_model_id" ref="hr.model_hr_job"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!--
+        Recursive node template: renders one job position, then recurses
+        into its direct reports (child_ids), one indent level deeper.
+        Mirrors hr_department_tree_report.report_department_node.
+    -->
+    <template id="report_job_node">
+        <div t-attf-class="job_node job_level_#{depth if depth &lt; 4 else 4}">
+            <div class="job_row">
+                <span class="job_name" t-esc="node.name"/>
+                <span class="job_meta">
+                    <span t-if="node.department_id" class="job_department" t-esc="node.department_id.name"/>
+                    <span t-if="node.no_of_employee" class="job_badge">
+                        <t t-esc="node.no_of_employee"/>
+                        <t t-if="node.no_of_employee == 1"> employee</t>
+                        <t t-else=""> employees</t>
+                    </span>
+                </span>
+            </div>
+            <t t-set="child_jobs" t-value="node.child_ids.filtered(lambda c: c.active).sorted(key=lambda c: c.name or '')"/>
+            <div t-if="child_jobs" class="job_children">
+                <t t-foreach="child_jobs" t-as="child_job">
+                    <t t-call="hr_job_hierarchy.report_job_node">
+                        <t t-set="node" t-value="child_job"/>
+                        <t t-set="depth" t-value="depth + 1"/>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <template id="report_job_hierarchy">
+        <t t-call="web.html_container">
+            <t t-set="company" t-value="env.company"/>
+            <t t-call="web.internal_layout">
+                <div class="page o_job_tree_report">
+                    <style>
+                        .o_job_tree_report {
+                            font-family: Arial, Helvetica, sans-serif;
+                            color: #1A1A1A;
+                            font-size: 11px;
+                        }
+                        .o_job_tree_report .job_report_header {
+                            margin-bottom: 22px;
+                            border-bottom: 2px solid #0D3B23;
+                            padding-bottom: 10px;
+                        }
+                        .o_job_tree_report .job_report_header h2 {
+                            color: #0D3B23;
+                            margin: 0 0 4px 0;
+                            font-size: 18px;
+                        }
+                        .o_job_tree_report .job_report_header .job_report_subtitle {
+                            color: #666;
+                            font-size: 11px;
+                        }
+                        .o_job_tree_report .job_node {
+                            margin: 2px 0 2px 0;
+                        }
+                        .o_job_tree_report .job_children {
+                            margin-left: 22px;
+                            padding-left: 10px;
+                            border-left: 1px dashed #C9D6CF;
+                        }
+                        .o_job_tree_report .job_row {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: 5px 10px;
+                            border-radius: 4px;
+                            margin: 2px 0;
+                        }
+                        .o_job_tree_report .job_level_0 .job_row { background: #0D3B23; }
+                        .o_job_tree_report .job_level_0 > .job_row .job_name { color: #FFFFFF; font-weight: 700; font-size: 13px; }
+                        .o_job_tree_report .job_level_0 > .job_row .job_department { color: #D4AF37; }
+                        .o_job_tree_report .job_level_1 .job_row { background: #E8F0EC; }
+                        .o_job_tree_report .job_level_1 > .job_row .job_name { color: #0D3B23; font-weight: 700; }
+                        .o_job_tree_report .job_level_2 .job_row { background: #F4F7F5; }
+                        .o_job_tree_report .job_level_3 .job_row,
+                        .o_job_tree_report .job_level_4 .job_row { background: #FFFFFF; border: 1px solid #EEE; }
+                        .o_job_tree_report .job_name { font-weight: 600; color: #1A1A1A; }
+                        .o_job_tree_report .job_meta { display: flex; align-items: center; gap: 10px; font-size: 10px; }
+                        .o_job_tree_report .job_department { color: #555; }
+                        .o_job_tree_report .job_badge {
+                            background: #D4AF37;
+                            color: #1A1A1A;
+                            border-radius: 10px;
+                            padding: 1px 8px;
+                            font-weight: 600;
+                        }
+                    </style>
+
+                    <div class="job_report_header">
+                        <h2>Job Hierarchy</h2>
+                        <div class="job_report_subtitle">Reporting chain between job positions, independent of the department structure.</div>
+                    </div>
+
+                    <t t-set="roots" t-value="docs.filtered(lambda j: not j.parent_id or j.parent_id not in docs).sorted(key=lambda j: j.name or '')"/>
+                    <t t-foreach="roots" t-as="root_job">
+                        <t t-call="hr_job_hierarchy.report_job_node">
+                            <t t-set="node" t-value="root_job"/>
+                            <t t-set="depth" t-value="0"/>
+                        </t>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
