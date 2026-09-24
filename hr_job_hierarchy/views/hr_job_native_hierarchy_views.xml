@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Native Hierarchy view of Job Positions, structured by the
+        "Reports To" chain (hr.job.parent_id / child_ids added by this
+        module). Same widget/syntax as the stock Departments Hierarchy
+        view (child_field + draggable reparenting).
+    -->
+    <record id="hr_job_view_hierarchy" model="ir.ui.view">
+        <field name="name">hr.job.hierarchy</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <hierarchy child_field="child_ids" draggable="1">
+                <field name="name"/>
+                <field name="color"/>
+                <field name="department_id"/>
+                <field name="no_of_employee"/>
+                <templates>
+                    <t t-name="hierarchy-box">
+                        <div t-attf-class="o_hierarchy_node_header d-flex justify-content-center align-items-center o_hierarchy_node_color_{{ record.color.raw_value }}">
+                            <field name="name"/>
+                        </div>
+                        <div class="o_hierarchy_node_body d-flex flex-column">
+                            <field name="department_id" class="pt-1 ps-1"/>
+                            <div>
+                                <button class="btn btn-link" name="action_view_job_employees" type="object">
+                                    <t t-out="record.no_of_employee.raw_value"/> Employees
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </hierarchy>
+        </field>
+    </record>
+
+    <record id="hr_job_action_hierarchy" model="ir.actions.act_window">
+        <field name="name">Jobs by Parent Job</field>
+        <field name="res_model">hr.job</field>
+        <field name="view_mode">hierarchy,kanban,list,form</field>
+    </record>
+
+    <menuitem id="menu_job_hierarchy_native"
+              name="Jobs by Parent Job"
+              parent="hr.hr_menu_hr_reports"
+              action="hr_job_action_hierarchy"
+              groups="hr.group_hr_user"
+              sequence="59"/>
+
+    <!--
+        Native Hierarchy view of Departments (same structure as the stock
+        Departments Hierarchy view), with the node body focused on job
+        positions instead of employees.
+    -->
+    <record id="hr_department_view_hierarchy_jobs" model="ir.ui.view">
+        <field name="name">hr.department.hierarchy.jobs</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <hierarchy child_field="child_ids" draggable="1">
+                <field name="name"/>
+                <field name="color"/>
+                <field name="job_count"/>
+                <templates>
+                    <t t-name="hierarchy-box">
+                        <div t-attf-class="o_hierarchy_node_header d-flex justify-content-center align-items-center o_hierarchy_node_color_{{ record.color.raw_value }}">
+                            <field name="name"/>
+                        </div>
+                        <div class="o_hierarchy_node_body d-flex flex-column">
+                            <div>
+                                <button class="btn btn-link" name="action_view_department_jobs" type="object">
+                                    <t t-out="record.job_count.raw_value"/> Job Positions
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </hierarchy>
+        </field>
+    </record>
+
+    <record id="hr_department_action_hierarchy_jobs" model="ir.actions.act_window">
+        <field name="name">Jobs by Department</field>
+        <field name="res_model">hr.department</field>
+        <field name="view_mode">hierarchy,kanban,list,form</field>
+    </record>
+
+    <menuitem id="menu_job_hierarchy_by_department_native"
+              name="Jobs by Department"
+              parent="hr.hr_menu_hr_reports"
+              action="hr_department_action_hierarchy_jobs"
+              groups="hr.group_hr_user"
+              sequence="60"/>
+
+</odoo>
