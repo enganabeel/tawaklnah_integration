@@ -1,0 +1,51 @@
+/*
+ * Card styling for the "Positional Structure" org chart (hr.job), mirroring
+ * the structural rules department_chart_types defines for .o_org_dept_card
+ * (tight padding, title clamped to 3 lines, ellipsised meta line, badge
+ * look) but under our own class name so this module doesn't depend on
+ * another addon's CSS staying as it is.
+ *
+ * .o_org_node_inner's padding/gap reset is generic (unscoped by model) and
+ * comes from department_chart_types when it's installed; if it isn't, the
+ * cards still work, just with the default web_org node padding.
+ */
+
+.o_org_job_card {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 4px 6px !important;
+    overflow: hidden;
+    line-height: 1.1;
+    background-color: #E3EEE7 !important;
+    border: 2px solid #1B5E3F !important;
+    border-top: 6px solid #0D3B23 !important;
+    color: #0D3B23 !important;
+
+    .o_org_job_title {
+        color: inherit !important;
+        font-size: 11px;
+        font-weight: 700;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .o_org_job_department {
+        color: inherit !important;
+        opacity: 0.8;
+        font-size: 9px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .o_org_job_badge {
+        font-size: 9px;
+        padding: 2px 6px;
+        background-color: #ffffff;
+        color: #212529 !important;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+}

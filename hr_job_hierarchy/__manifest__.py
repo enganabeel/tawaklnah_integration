@@ -26,15 +26,21 @@ department hierarchy:
     'author': 'Ejad Tech',
     'website': 'https://ejadtech.sa',
     'license': 'LGPL-3',
-    'depends': ['hr_recruitment'],
+    'depends': ['hr_recruitment', 'web_org'],
     'data': [
         'views/hr_job_views.xml',
         'views/hr_job_hierarchy_templates.xml',
         'views/hr_job_native_hierarchy_views.xml',
+        'views/hr_job_org_views.xml',
         'reports/hr_job_hierarchy_report.xml',
         'reports/hr_job_by_department_report.xml',
         'views/hr_job_hierarchy_menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'hr_job_hierarchy/static/src/scss/org_view.scss',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

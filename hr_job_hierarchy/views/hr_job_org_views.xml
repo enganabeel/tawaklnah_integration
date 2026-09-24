@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        "Positional Structure": org-chart view of Job Positions, structured
+        by the "Reports To" field (parent_id/child_ids, added earlier in
+        this module) rather than the department tree. Same org view type
+        (from web_org) and card pattern as department_chart_types' own
+        Departments Org Chart, adapted for hr.job: no per-type coloring
+        or hanging layout, since jobs don't have an equivalent to
+        dept_type/chart_layout.
+    -->
+    <record id="hr_job_view_org" model="ir.ui.view">
+        <field name="name">hr.job.view.org</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <org title_field="name"
+                 parent_field="parent_id"
+                 icon="fa-briefcase"
+                 node_width="180"
+                 node_height="65"
+                 padding="12"
+                 inverted="1"
+                 link_type="default"
+                 link_radius="0"
+                 link_line_width="1">
+
+                <field name="name"/>
+                <field name="parent_id"/>
+                <field name="department_id"/>
+                <field name="no_of_employee"/>
+
+                <templates>
+                    <t t-name="org-box">
+                        <!--
+                            Same record shape as the department card: field
+                            values are read as record.data.<field>.
+                        -->
+                        <div t-att-data-select-node="record.data.id"
+                             class="o_org_job_card p-2 border rounded text-center shadow-sm h-100 d-flex flex-column justify-content-between">
+                            <div class="o_org_job_head">
+                                <div class="o_org_job_title fw-bold">
+                                    <field name="name"/>
+                                </div>
+                                <t t-if="record.data.department_id">
+                                    <div class="o_org_job_department">
+                                        <i class="fa fa-building-o me-1"/> <field name="department_id"/>
+                                    </div>
+                                </t>
+                            </div>
+                            <t t-if="record.data.no_of_employee">
+                                <span class="badge o_org_job_badge align-self-center" title="Employees in this position">
+                                    <i class="fa fa-users me-1"/> <field name="no_of_employee"/>
+                                </span>
+                            </t>
+                        </div>
+                    </t>
+                </templates>
+            </org>
+        </field>
+    </record>
+
+    <record id="hr_job_action_org" model="ir.actions.act_window">
+        <field name="name">Positional Structure</field>
+        <field name="res_model">hr.job</field>
+        <field name="view_mode">org,kanban,list,form</field>
+        <field name="view_id" ref="hr_job_view_org"/>
+    </record>
+
+    <menuitem id="menu_hr_job_org"
+              name="Positional Structure"
+              parent="hr.hr_menu_hr_reports"
+              action="hr_job_action_org"
+              groups="hr.group_hr_user"
+              sequence="61"/>
+
+</odoo>
